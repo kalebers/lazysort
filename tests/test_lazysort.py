@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from lazysort.inference import InferenceError, UnavailableBackend, parse_classification
+from lazysort.inference import (
+    InferenceError,
+    UnavailableBackend,
+    limit_document_text,
+    parse_classification,
+)
 from lazysort.models import PlanItem
 from lazysort.operations import SafetyError, apply_plan, undo_operation
 from lazysort.persistence import HistoryStore
@@ -58,6 +63,13 @@ def test_unsupported_file_type(tmp_path: Path):
 def test_inference_failure_is_explicit():
     with pytest.raises(InferenceError):
         UnavailableBackend().classify("private document text")
+
+
+def test_long_document_is_bounded_for_small_context():
+    text = "header " + ("important content " * 1000)
+    bounded = limit_document_text(text)
+    assert len(bounded) == 2400
+    assert bounded == text[:2400]
 
 
 def test_dry_run_does_not_move(tmp_path: Path):

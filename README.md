@@ -20,8 +20,44 @@ generation limits, CPU-only llama.cpp configuration, and no automatic model down
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-streamlit run app.py
+python -m streamlit run app.py
+```
+
+Always use `python -m streamlit`, rather than a bare `streamlit` command. This guarantees
+that Streamlit and its compiled dependencies come from the active `.venv`. Before
+launching, you can verify the environment with:
+
+```bash
+which python
+which streamlit
+python -c "import sys, numpy, pyarrow; print(sys.executable); print(numpy.__version__); print(pyarrow.__version__)"
+```
+
+The first two paths should point inside this project's `.venv/` directory.
+
+### Fixing a NumPy/PyArrow startup error
+
+If the traceback mentions `/opt/anaconda3`, `numpy.core.multiarray`, or `_ARRAY_API`,
+the global Anaconda Streamlit is being used instead of the project environment. Recreate
+the project's environment with compatible dependencies:
+
+```bash
+deactivate 2>/dev/null || true
+rm -rf .venv
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+If the shell still resolves the old executable, close and reopen the terminal, activate
+`.venv` again, and use the module form explicitly:
+
+```bash
+.venv/bin/python -m streamlit run app.py
 ```
 
 PDF extraction uses PyMuPDF. Text and Markdown are supported without extra tooling.
@@ -31,8 +67,7 @@ Folder monitoring is intentionally not included in the default flow; if added la
 ### Included local model
 
 LazySort uses **Qwen2.5-0.5B-Instruct Q4_K_M GGUF**, an Apache-2.0 open-weight model
-quantized for CPU inference. It is approximately 0.5 GB and is a practical starting point
-for an 8 GB Intel MacBook Pro. The model is downloaded into `models/` and is ignored by
+quantized for CPU inference. It is approximately 0.5 GB. The model is downloaded into `models/` and is ignored by
 Git; model files are not source code and should not be committed.
 
 ```bash

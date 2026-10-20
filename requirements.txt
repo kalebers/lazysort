@@ -4,5 +4,6 @@ pytest>=8,<9
 # Stable CPU inference backend for Intel macOS:
 llama-cpp-python==0.2.90
 numpy<2
+pyarrow>=15,<18
 # Optional folder monitoring (disabled by default):
 # watchdog>=5,<7

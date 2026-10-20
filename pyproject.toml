@@ -12,6 +12,7 @@ dependencies = [
     "streamlit>=1.38,<2",
     "llama-cpp-python==0.2.90",
     "numpy<2",
+    "pyarrow>=15,<18",
 ]
 
 [project.optional-dependencies]
