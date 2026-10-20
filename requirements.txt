@@ -1,0 +1,8 @@
+PyMuPDF>=1.24,<2
+streamlit>=1.38,<2
+pytest>=8,<9
+# Stable CPU inference backend for Intel macOS:
+llama-cpp-python==0.2.90
+numpy<2
+# Optional folder monitoring (disabled by default):
+# watchdog>=5,<7
