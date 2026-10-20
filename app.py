@@ -19,8 +19,18 @@ st.caption("A local-first, reviewable file organizer. Nothing is uploaded.")
 
 root_value = st.text_input("Folder to organize", value=str(Path.home() / "Downloads"))
 root = Path(root_value).expanduser()
-database = root / ".lazysort" / "history.sqlite3"
-history = HistoryStore(database)
+if not root.is_dir():
+    st.error(f"Folder not found: {root}. Enter an existing folder path.")
+    st.stop()
+
+try:
+    database = root / ".lazysort" / "history.sqlite3"
+    history = HistoryStore(database)
+except OSError as exc:
+    st.error(f"Cannot use this folder for LazySort history: {exc}")
+    st.info("Choose a folder you can read and write, then try again.")
+    st.stop()
+
 default_model = Path(__file__).parent / "models" / "qwen2.5-0.5b-instruct-q4_k_m.gguf"
 model_path = os.getenv("LAZYSORT_MODEL_PATH") or (
     str(default_model) if default_model.exists() else None
