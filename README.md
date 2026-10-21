@@ -4,6 +4,13 @@ LazySort is a privacy-first, local-first file organizer for macOS and other desk
 platforms. It extracts text from supported documents, optionally asks a compact local
 model for a structured suggestion, and presents a reviewable plan before moving anything.
 
+## Project preview
+
+![LazySort Streamlit interface](assets/lazysort-ui.png)
+
+The screenshot shows the local Streamlit interface before a folder scan. The selected
+folder remains on the user's machine, and no document content is uploaded.
+
 ## Why local open-source AI?
 
 Documents often contain personal, financial, or confidential information. Local inference
@@ -96,7 +103,8 @@ before use. If the runtime or model cannot load, LazySort remains usable in manu
 
 ## Usage and safety
 
-1. Enter a folder path and click **Scan folder**.
+1. Enter a folder path and click **Scan folder**. The folder must contain PDF, Markdown, or
+   plain-text files; unsupported files are intentionally ignored.
 2. Review or edit each destination in the organization plan.
 3. Use **Dry-run preview** to inspect moves without changing files.
 4. Click **Approve and organize** only after reviewing the plan.
@@ -106,6 +114,9 @@ LazySort never overwrites an existing destination, deletes originals as part of 
 organization, or allows source/destination paths outside the selected folder. It stores
 history in `.lazysort/history.sqlite3` inside the selected folder. Do not point it at a
 folder whose `.lazysort` directory should be managed by another application.
+
+The SQLite file is binary and should be opened with a SQLite tool, not a text editor.
+An empty history database is normal until an organization plan is explicitly approved.
 
 ## Demo
 

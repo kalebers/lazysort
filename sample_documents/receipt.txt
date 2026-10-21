@@ -1,3 +1,3 @@
-Receipt
-
-Coffee and stationery, total $18.40.
+Invoice #123
+Acme Inc
+Total: $250

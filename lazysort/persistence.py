@@ -8,7 +8,10 @@ from pathlib import Path
 class HistoryStore:
     def __init__(self, database: Path):
         self.database = database
-        self.database.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            self.database.parent.mkdir(parents=True, exist_ok=True)
+        except PermissionError as exc:
+            raise OSError(f"Cannot create LazySort history in {self.database.parent}: {exc}") from exc
         with self._connect() as connection:
             connection.execute(
                 """CREATE TABLE IF NOT EXISTS operations (
