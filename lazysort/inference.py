@@ -13,7 +13,7 @@ class InferenceError(RuntimeError):
     """Raised when a local inference backend cannot produce a valid result."""
 
 
-def limit_document_text(text: str, max_chars: int = 1800) -> str:
+def limit_document_text(text: str, max_chars: int = 2400) -> str:
     """Keep the prompt within the small model's context window."""
     return text[:max_chars]
 
