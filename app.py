@@ -121,20 +121,28 @@ if plan:
 
     if st.button("Dry-run preview"):
         moves = [(Path(item.source), Path(item.destination)) for item in plan if item.source != item.destination]
-        try:
-            preview = apply_plan(root, moves, history, dry_run=True)
-            st.write(f"{len(preview)} move(s) would be applied. Originals are not changed.")
-            st.dataframe([{"from": str(source), "to": str(destination)} for source, destination in preview])
-        except (OSError, SafetyError) as exc:
-            st.error(str(exc))
+        history_for_action = st.session_state.get("history")
+        if history_for_action is None:
+            st.error("Run a scan first to initialize LazySort history.")
+        else:
+            try:
+                preview = apply_plan(root, moves, history_for_action, dry_run=True)
+                st.write(f"{len(preview)} move(s) would be applied. Originals are not changed.")
+                st.dataframe([{"from": str(source), "to": str(destination)} for source, destination in preview])
+            except (OSError, SafetyError) as exc:
+                st.error(str(exc))
 
     if st.button("Approve and organize", type="primary"):
         moves = [(Path(item.source), Path(item.destination)) for item in plan if item.source != item.destination]
-        try:
-            completed = apply_plan(root, moves, history, dry_run=False)
-            st.success(f"Organized {len(completed)} file(s).")
-        except (OSError, SafetyError) as exc:
-            st.error(str(exc))
+        history_for_action = st.session_state.get("history")
+        if history_for_action is None:
+            st.error("Run a scan first to initialize LazySort history.")
+        else:
+            try:
+                completed = apply_plan(root, moves, history_for_action, dry_run=False)
+                st.success(f"Organized {len(completed)} file(s).")
+            except (OSError, SafetyError) as exc:
+                st.error(str(exc))
 
 with st.expander("Operation history", expanded=True):
     history_for_view = st.session_state.get("history") or HistoryStore(database)
