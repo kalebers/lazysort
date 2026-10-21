@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from abc import ABC, abstractmethod
 from typing import Any
@@ -12,7 +13,7 @@ class InferenceError(RuntimeError):
     """Raised when a local inference backend cannot produce a valid result."""
 
 
-def limit_document_text(text: str, max_chars: int = 2400) -> str:
+def limit_document_text(text: str, max_chars: int = 1800) -> str:
     """Keep the prompt within the small model's context window."""
     return text[:max_chars]
 
@@ -48,7 +49,7 @@ class UnavailableBackend(InferenceBackend):
 
 
 class LlamaCppBackend(InferenceBackend):
-    def __init__(self, model_path: str, context_size: int = 2048, max_tokens: int = 256):
+    def __init__(self, model_path: str, context_size: int = 2048, max_tokens: int = 128):
         self.model_path = model_path
         self.context_size = context_size
         self.max_tokens = max_tokens
@@ -58,6 +59,8 @@ class LlamaCppBackend(InferenceBackend):
             raise InferenceError(
                 "llama-cpp-python is not installed; use manual mode or install it separately"
             ) from exc
+        if not os.path.exists(model_path):
+            raise InferenceError(f"Model file not found: {model_path}")
         try:
             self._llama = Llama(
                 model_path=model_path,
@@ -80,7 +83,9 @@ class LlamaCppBackend(InferenceBackend):
             "If evidence is insufficient, use a low confidence and say so in reasoning."
         )
         user_prompt = f"Document text to classify:\n{limit_document_text(text)}"
-        output_tokens = min(self.max_tokens, max(64, self.context_size // 8))
+        output_tokens = min(self.max_tokens, max(32, self.context_size // 16))
+        prompt_text = limit_document_text(text, max_chars=1200)
+        user_prompt = f"Document text to classify:\n{prompt_text}"
         try:
             result = self._llama.create_chat_completion(
                 messages=[
